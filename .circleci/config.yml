@@ -61,11 +61,11 @@ jobs:
         name: Build and push docker image
         command: |
           if [ "$CIRCLE_BRANCH" == "master" ]; then
-            TAG=0.5.$CIRCLE_BUILD_NUM
+            TAG=$CIRCLE_PROJECT_REPONAME-0.5.$CIRCLE_BUILD_NUM
           fi
           if [ "$CIRCLE_BRANCH" != "master" ]; then
-            TAG=0.5.$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
+            TAG=$CIRCLE_PROJECT_REPONAME-0.5.$CIRCLE_BUILD_NUM-PR
           fi
-          docker build -t konradboniecki/budget:account-activator-$TAG .
+          docker build -t konradboniecki/budget:$TAG .
           docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push konradboniecki/budget:account-activator-$TAG
+          docker push konradboniecki/budget:$TAG
