@@ -19,8 +19,6 @@ jobs:
         name: Clone Chassis and services for stubs
         command: |
           GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/chassis.git ~/chassisRepo
-#          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/webservice-mail.git ~/mailRepo
-#          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/webservice-account.git ~/accountRepo
     - checkout
 #_______________________________________________________________
 
@@ -30,22 +28,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install maven
     - run:
-        name: Install Chassis and stubs for contracts
+        name: Install Chassis and stubs for contracts, download dependencies
         command: |
+          LESS_LOGS=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
           cd ~/chassisRepo
-          mvn clean install -DskipTests=true
-#          cd ~/mailRepo
-#          mvn clean install -DskipTests=true
-#          cd ~/accountRepo
-#          mvn clean install -DskipTests=true
-    - run:
-        name: Download dependencies
-        command: |
-          mvn dependency:go-offline
+          mvn clean install -DskipTests=true -B $LESS_LOGS
+          cd ~/repo
+          mvn dependency:go-offline -B $LESS_LOGS
     - run:
         name: Build and run tests
         command: |
-          mvn clean install
+          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
     - store_test_results:
         paths:

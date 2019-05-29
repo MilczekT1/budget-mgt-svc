@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>pl.konradboniecki</groupId>
-        <artifactId>chassis</artifactId>
+        <artifactId>chassis-parent</artifactId>
         <version>0.5</version>
     </parent>
 
@@ -13,15 +13,27 @@
     <artifactId>budget-management</artifactId>
     <version>0.5</version>
 
+    <properties>
+        <jacoco.classes.maxMissed>4</jacoco.classes.maxMissed>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>pl.konradboniecki</groupId>
-            <artifactId>chassis-tools</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>pl.konradboniecki</groupId>
+            <artifactId>chassis-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <!--Test libraries-->
         <dependency>
@@ -29,10 +41,21 @@
             <artifactId>chassis-test-tools</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+            <scope>test</scope>
+        </dependency>
         <!--Springboot starters-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <!--mandatory dependency to decrypt encrypted properties-->
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter</artifactId>
         </dependency>
     </dependencies>
 
@@ -53,6 +76,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-contract-maven-plugin</artifactId>
+                <configuration>
+                    <testMode>EXPLICIT</testMode>
+                    <packageWithBaseClasses>pl.konradboniecki.budget.budgetmanagement.contractbases</packageWithBaseClasses>
+                </configuration>
             </plugin>
         </plugins>
     </build>
