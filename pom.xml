@@ -13,10 +13,6 @@
     <artifactId>budget-management</artifactId>
     <version>0.5</version>
 
-    <properties>
-        <jacoco.classes.maxMissed>4</jacoco.classes.maxMissed>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

@@ -11,7 +11,7 @@ import pl.konradboniecki.budget.budgetmanagement.budget.service.BudgetService;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/budget")
+@RequestMapping("/api/budgets")
 public class BudgetController {
 
     private BudgetService budgetService;
@@ -36,5 +36,5 @@ public class BudgetController {
                 .status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(budgetService.saveBudget(budgetFromBody));
-    }
+    }//TODO: add tests for get and post
 }

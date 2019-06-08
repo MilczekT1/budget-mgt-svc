@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pl.konradboniecki.budget.budgetmanagement.budget.model.Budget;
-import pl.konradboniecki.budget.budgetmanagement.budget.model.BudgetRepository;
 
 import java.util.Optional;
 
@@ -44,7 +43,7 @@ public class BudgetService {
     }
 
     private Budget findByFamilyId(Long familyId){
-        Optional<Budget> budget =  budgetRepository.findByFamilyId(familyId);
+        Optional<Budget> budget = budgetRepository.findByFamilyId(familyId);
         if (budget.isPresent()){
             return budget.get();
         } else {

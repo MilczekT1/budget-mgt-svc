@@ -11,7 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
 import pl.konradboniecki.budget.budgetmanagement.budget.model.Budget;
-import pl.konradboniecki.budget.budgetmanagement.budget.model.BudgetRepository;
+import pl.konradboniecki.budget.budgetmanagement.budget.service.BudgetRepository;
 import pl.konradboniecki.budget.budgetmanagement.budget.service.BudgetService;
 
 import static io.restassured.config.RedirectConfig.redirectConfig;
@@ -26,7 +26,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         webEnvironment = WebEnvironment.RANDOM_PORT,
         properties = "spring.cloud.config.enabled=false"
 )
-public class SaveBase {
+public abstract class BudgetSaveBase {
 
     @Autowired protected BudgetService budgetService;
     @MockBean protected BudgetRepository budgetRepository;

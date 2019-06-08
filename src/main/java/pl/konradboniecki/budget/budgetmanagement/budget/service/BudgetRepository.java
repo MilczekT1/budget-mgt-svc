@@ -1,7 +1,8 @@
-package pl.konradboniecki.budget.budgetmanagement.budget.model;
+package pl.konradboniecki.budget.budgetmanagement.budget.service;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import pl.konradboniecki.budget.budgetmanagement.budget.model.Budget;
 
 import java.util.Optional;
 

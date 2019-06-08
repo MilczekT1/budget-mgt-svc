@@ -1,0 +1,33 @@
+//    @Id @GeneratedValue(generator="system-uuid")
+//    @GenericGenerator(name="system-uuid",
+//            strategy = "uuid")
+
+
+
+//    @DeleteMapping("/jars/{id}")
+//    public ResponseEntity<Void> deleteJar(@PathVariable("id") Long id){
+//        jarService.deleteJarByIdOrThrow(id);
+//        return ResponseEntity
+//                .noContent()
+//                .build();
+//    }
+//    @PutMapping("/jars/{id}")
+//    public ResponseEntity<Jar> updateJar(@PathVariable("id") Long id,
+//                                         @RequestBody Jar updatedJar){
+//        return ResponseEntity
+//                .ok()
+//                .contentType(MediaType.APPLICATION_JSON_UTF8)
+//                .body(jarService.updateJar(id,updatedJar));
+//    }
+//    @PostMapping("/jars")
+//    public ResponseEntity<Jar> saveJar(@RequestBody Jar jarToSave){
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body(jarService.saveJar(jarToSave));
+//    }
+//    @GetMapping("/jars/{id}")
+//    public ResponseEntity<Jar> findJar(@PathVariable("id") Long id){
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(jarService.findByIdOrThrow(id));
+//    }
