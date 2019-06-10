@@ -13,7 +13,7 @@ import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
 import pl.konradboniecki.budget.budgetmanagement.budget.model.Jar;
 import pl.konradboniecki.budget.budgetmanagement.budget.service.JarRepository;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
@@ -86,7 +86,10 @@ public class JarControllerGetTests {
                 .setId(2L)
                 .setCurrentAmount(0L)
                 .setCapacity(3L);
-        when(jarRepository.findAllByBudgetId(1L)).thenReturn(List.of(firstJar, secondJar));
+        ArrayList<Jar> jarList = new ArrayList<>();
+        jarList.add(firstJar);
+        jarList.add(secondJar);
+        when(jarRepository.findAllByBudgetId(1L)).thenReturn(jarList);
         // Then:
         mockMvc.perform(get("/api/budgets/1/jars"))
                 .andExpect(status().isOk())

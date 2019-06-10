@@ -13,7 +13,7 @@ import pl.konradboniecki.budget.budgetmanagement.budget.model.Jar;
 import pl.konradboniecki.budget.budgetmanagement.budget.service.JarRepository;
 import pl.konradboniecki.budget.budgetmanagement.budget.service.JarService;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static io.restassured.config.RedirectConfig.redirectConfig;
@@ -76,6 +76,9 @@ public abstract class JarFindBase {
                 .setId(2L)
                 .setCurrentAmount(0L)
                 .setCapacity(3L);
-        when(jarRepository.findAllByBudgetId(1L)).thenReturn(List.of(firstJar, secondJar));
+        ArrayList<Jar> jarList = new ArrayList<>();
+        jarList.add(firstJar);
+        jarList.add(secondJar);
+        when(jarRepository.findAllByBudgetId(1L)).thenReturn(jarList);
     }
 }
