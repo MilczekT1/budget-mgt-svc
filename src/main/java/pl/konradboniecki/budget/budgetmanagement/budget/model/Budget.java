@@ -22,7 +22,7 @@ public class Budget {
     @Column(name = "max_jars")
     private Long maxJars;
 
-    public Budget(){
+    public Budget() {
         setMaxJars(6L);
     }
 }

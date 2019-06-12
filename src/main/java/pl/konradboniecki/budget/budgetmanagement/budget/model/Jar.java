@@ -38,7 +38,7 @@ public class Jar {
         setCurrentAmount(0L);
     }
 
-    public Jar mergeWith(@NonNull Jar secondJar){
+    public Jar mergeWith(@NonNull Jar secondJar) {
         if (secondJar.getId() != null)
             setId(secondJar.getId());
         if (secondJar.getBudgetId() != null)
@@ -53,22 +53,22 @@ public class Jar {
         return this;
     }
 
-    public Jar setCurrentAmount(Long newAmount){
+    public Jar setCurrentAmount(Long newAmount) {
         this.currentAmount = newAmount;
         setStatus();
         return this;
     }
 
-    public Jar setCapacity(Long newCapacity){
+    public Jar setCapacity(Long newCapacity) {
         this.capacity = newCapacity;
         setStatus();
         return this;
     }
 
-    private Jar setStatus(){
+    private Jar setStatus() {
         if (currentAmount == null || capacity == null || capacity <= 0L) {
             this.status = JarStatus.NOT_STARTED.getStatus();
-        } else if(currentAmount < capacity){
+        } else if (currentAmount < capacity) {
             this.status = JarStatus.IN_PROGRESS.getStatus();
         } else {
             this.status = JarStatus.COMPLETED.getStatus();

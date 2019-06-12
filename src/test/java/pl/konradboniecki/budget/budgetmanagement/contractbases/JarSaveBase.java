@@ -40,7 +40,7 @@ public class JarSaveBase {
         mock_create_jar_with_id_equal_1();
     }
 
-    private void mock_create_jar_with_id_equal_1(){
+    private void mock_create_jar_with_id_equal_1() {
         Jar jar = new Jar()
                 .setJarName("name")
                 .setBudgetId(1L)

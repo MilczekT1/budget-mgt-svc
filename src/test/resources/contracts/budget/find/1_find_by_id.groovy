@@ -61,6 +61,15 @@ import org.springframework.cloud.contract.spec.Contract
 		}
 		response {
 			status NOT_FOUND()
+			headers {
+				contentType applicationJson()
+			}
+			body(
+				"timestamp": value(regex("[0-9]{2}-[0-9]{2}-[0-9]{4} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]")),
+				"status": 404,
+				"statusName": "NOT_FOUND",
+				"message": "Budget with id: 100 not found."
+			)
 		}
 	}
 ]

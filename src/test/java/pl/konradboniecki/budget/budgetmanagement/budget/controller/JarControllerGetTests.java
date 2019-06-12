@@ -42,12 +42,13 @@ public class JarControllerGetTests {
     @Test
     public void when_jar_not_found_then_response_is_correct() throws Exception {
         // Given:
-        when(jarRepository.findByIdAndBudgetId(1L,1L))
+        when(jarRepository.findByIdAndBudgetId(1L, 1L))
                 .thenReturn(Optional.empty());
         // Then:
         mockMvc.perform(get("/api/budgets/1/jars/1"))
                 .andExpect(status().isNotFound())
                 .andDo(print())
+                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()))
                 .andExpect(content().string(containsString("Jar with id: 1 not found in budget with id: 1")));
 
     }

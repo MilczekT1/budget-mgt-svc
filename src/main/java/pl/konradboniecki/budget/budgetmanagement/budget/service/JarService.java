@@ -18,55 +18,55 @@ public class JarService {
         this.jarRepository = jarRepository;
     }
 
-    Jar findByIdOrThrow(Long id){
-        Optional<Jar> jar =  jarRepository.findById(id);
-        if (jar.isPresent()){
+    Jar findByIdOrThrow(Long id) {
+        Optional<Jar> jar = jarRepository.findById(id);
+        if (jar.isPresent()) {
             return jar.get();
         } else {
             throw new JarNotFoundException("Jar with id: " + id + " not found.");
         }
     }
 
-    //add units
-    public Jar findByIdAndBudgetIdOrThrow(Long id, Long budgetId){
-        Optional<Jar> jar =  jarRepository.findByIdAndBudgetId(id, budgetId);
-        if (jar.isPresent()){
+
+    public Jar findByIdAndBudgetIdOrThrow(Long id, Long budgetId) {
+        Optional<Jar> jar = jarRepository.findByIdAndBudgetId(id, budgetId);
+        if (jar.isPresent()) {
             return jar.get();
         } else {
             throw new JarNotFoundException("Jar with id: " + id + " not found in budget with id: " + budgetId);
         }
     }
 
-    public Jar saveJar(Jar jar, Long budgetId){
-        if (jar.getBudgetId().equals(budgetId)){
-            return jarRepository.save(jar);
+    public Jar saveJar(Jar jarFromBody, Long budgetIdFromPath) {
+        if (jarFromBody.getBudgetId().equals(budgetIdFromPath)) {
+            return jarRepository.save(jarFromBody);
         } else {
             throw new JarCreationException("Budget id in body and path don't match.");
         }
     }
 
-    public Jar updateJar(Long originID, Long budgetId, Jar newJar){
+    public Jar updateJar(Long originID, Long budgetId, Jar newJar) {
         Jar origin = findByIdAndBudgetIdOrThrow(originID, budgetId);
         return jarRepository.save(origin.mergeWith(newJar));
     }
 
-    public void removeJarFromBudgetOrThrow(Long jarId, Long budgetId){
-        try{
-           jarRepository.deleteByIdAndBudgetId(jarId, budgetId);
-        } catch (EmptyResultDataAccessException e){
+    public void removeJarFromBudgetOrThrow(Long jarId, Long budgetId) {
+        try {
+            jarRepository.deleteByIdAndBudgetId(jarId, budgetId);
+        } catch (EmptyResultDataAccessException e) {
             throw new JarNotFoundException("Jar with id: " + jarId + " not found in budget with id: " + budgetId);
         }
     }
 
-    public void deleteJarByIdOrThrow(Long id){
+    public void deleteJarByIdOrThrow(Long id) {
         try {
             jarRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             throw new JarNotFoundException("Jar with id: " + id + " not found.");
         }
     }
 
-    public List<Jar> findAllJarsByBudgetId(Long budgetId){
+    public List<Jar> findAllJarsByBudgetId(Long budgetId) {
         return jarRepository.findAllByBudgetId(budgetId);
     }
 }

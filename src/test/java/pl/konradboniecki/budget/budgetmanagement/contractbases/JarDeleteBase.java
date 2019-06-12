@@ -44,11 +44,11 @@ public abstract class JarDeleteBase {
         mock_jar_not_found_by_id_equal_2_during_deletion();
     }
 
-    private void mock_jar_found_by_id_equal_1_during_deletion(){
+    private void mock_jar_found_by_id_equal_1_during_deletion() {
         doNothing().when(jarRepository).deleteById(eq(1L));
     }
 
-    private void mock_jar_not_found_by_id_equal_2_during_deletion(){
+    private void mock_jar_not_found_by_id_equal_2_during_deletion() {
         doThrow(EmptyResultDataAccessException.class)
                 .when(jarRepository).deleteByIdAndBudgetId(eq(2L), eq(1L));
     }

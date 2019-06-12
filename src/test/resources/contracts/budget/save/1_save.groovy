@@ -27,6 +27,31 @@ import org.springframework.cloud.contract.spec.Contract
 				maxJars: value(producer(6L), consumer(fromRequest().body("maxJars")))
 			)
 		}
-		//TODO: create contract for conflict
+	},
+	Contract.make {
+		request {
+			method POST()
+			url("/api/budgets")
+			headers {
+				accept applicationJson()
+				contentType applicationJson()
+			}
+			body(
+				familyId: value(producer(8L), consumer(anyPositiveInt())),
+				maxJars: value(producer(6L), consumer(6L))
+			)
+		}
+		response {
+			status INTERNAL_SERVER_ERROR()
+			headers {
+				contentType applicationJson()
+			}
+			body(
+				"timestamp": value(regex("[0-9]{2}-[0-9]{2}-[0-9]{4} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]")),
+				"status": 500,
+				"statusName": "INTERNAL_SERVER_ERROR",
+				"message": value("Something bad happened, check your posted data")
+			)
+		}
 	}
 ]

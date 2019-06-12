@@ -11,11 +11,15 @@ import java.util.Optional;
 @Repository
 public interface JarRepository extends CrudRepository<Jar, Long> {
     Optional<Jar> findById(Long id);
+
     Optional<Jar> findByIdAndBudgetId(Long id, Long budgetId);
+
     List<Jar> findAllByBudgetId(Long id);
+
     Jar save(Jar jar);
 
     @Transactional
     void deleteByIdAndBudgetId(Long id, Long budgetId);
+
     void deleteById(Long aLong);
 }

@@ -44,7 +44,7 @@ public class JarUpdateBase {
         mock_jar_with_id_equal_2_not_found_during_update();
     }
 
-    private void mock_modify_jar_with_id_equal_1(){
+    private void mock_modify_jar_with_id_equal_1() {
         // Given:
         Long jarId = 1L;
         Jar originJar = new Jar()
@@ -66,7 +66,7 @@ public class JarUpdateBase {
         when(jarRepository.save(any(Jar.class))).thenReturn(mergedJar);
     }
 
-    private void mock_jar_with_id_equal_2_not_found_during_update(){
+    private void mock_jar_with_id_equal_2_not_found_during_update() {
         when(jarRepository.findByIdAndBudgetId(2L, 1L))
                 .thenReturn(Optional.empty());
     }

@@ -1,6 +1,8 @@
 package pl.konradboniecki.budget.budgetmanagement.budget.service;
 
-public class JarCreationException extends RuntimeException {
+import pl.konradboniecki.chassis.exceptions.ResourceCreationException;
+
+public class JarCreationException extends ResourceCreationException {
 
     public JarCreationException(String message) {
         super(message);

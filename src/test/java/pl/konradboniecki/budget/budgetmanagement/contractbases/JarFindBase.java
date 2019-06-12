@@ -47,7 +47,7 @@ public abstract class JarFindBase {
         mock_get_2_jars_as_list();
     }
 
-    private void mock_jar_found_by_id_equal_1(){
+    private void mock_jar_found_by_id_equal_1() {
         Jar jar = new Jar()
                 .setId(1L)
                 .setBudgetId(1L)
@@ -58,12 +58,12 @@ public abstract class JarFindBase {
                 .thenReturn(Optional.of(jar));
     }
 
-    private void mock_jar_not_found_by_id_equal_2(){
+    private void mock_jar_not_found_by_id_equal_2() {
         when(jarRepository.findByIdAndBudgetId(eq(1L), eq(2L)))
                 .thenReturn(Optional.empty());
     }
 
-    private void mock_get_2_jars_as_list(){
+    private void mock_get_2_jars_as_list() {
         Jar firstJar = new Jar()
                 .setJarName("name1")
                 .setBudgetId(1L)

@@ -23,14 +23,14 @@ public class JarController {
 
     @GetMapping("/{budgetId}/jars/{jarId}")
     public ResponseEntity<Jar> findJar(@PathVariable("budgetId") Long budgetId,
-                                       @PathVariable("jarId") Long jarId){
+                                       @PathVariable("jarId") Long jarId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(jarService.findByIdAndBudgetIdOrThrow(jarId, budgetId));
     }
 
     @GetMapping("/{budgetId}/jars")
-    public ResponseEntity<List<Jar>> findJars(@PathVariable("budgetId") Long budgetId){
+    public ResponseEntity<List<Jar>> findJars(@PathVariable("budgetId") Long budgetId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(jarService.findAllJarsByBudgetId(budgetId));
@@ -38,7 +38,7 @@ public class JarController {
 
     @PostMapping("/{budgetId}/jars")
     public ResponseEntity<Jar> saveJar(@RequestBody Jar jarToSave,
-                                       @PathVariable("budgetId") Long budgetId){
+                                       @PathVariable("budgetId") Long budgetId) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -48,7 +48,7 @@ public class JarController {
     @PutMapping("/{budgetId}/jars/{id}")
     public ResponseEntity<Jar> updateJar(@PathVariable("id") Long jarId,
                                          @PathVariable("budgetId") Long budgetId,
-                                         @RequestBody Jar updatedJar){
+                                         @RequestBody Jar updatedJar) {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -57,7 +57,7 @@ public class JarController {
 
     @DeleteMapping("/{budgetId}/jars/{id}")
     public ResponseEntity<Void> deleteJar(@PathVariable("id") Long id,
-                                          @PathVariable("budgetId") Long budgetId){
+                                          @PathVariable("budgetId") Long budgetId) {
         jarService.removeJarFromBudgetOrThrow(id, budgetId);
         return ResponseEntity
                 .noContent()

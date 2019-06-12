@@ -24,17 +24,18 @@ public class BudgetController {
     @GetMapping("/{id}")
     public ResponseEntity<Budget> findBudget(
             @PathVariable("id") Long id,
-            @RequestParam(name = "idType", required = false, defaultValue = "id") String idType){
+            @RequestParam(name = "idType", required = false, defaultValue = "id") String idType) {
+
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(budgetService.findBy(id, idType));
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(budgetService.findByOrThrow(id, idType));
     }
 
     @PostMapping
-    public ResponseEntity<Budget> createBudget(@RequestBody Budget budgetFromBody){
+    public ResponseEntity<Budget> createBudget(@RequestBody Budget budgetFromBody) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(budgetService.saveBudget(budgetFromBody));
-    }//TODO: add tests for get and post
+    }
 }

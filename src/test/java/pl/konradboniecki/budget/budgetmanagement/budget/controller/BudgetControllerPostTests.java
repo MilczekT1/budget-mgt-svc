@@ -11,11 +11,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
-import pl.konradboniecki.budget.budgetmanagement.budget.model.Jar;
-import pl.konradboniecki.budget.budgetmanagement.budget.service.JarRepository;
+import pl.konradboniecki.budget.budgetmanagement.budget.model.Budget;
+import pl.konradboniecki.budget.budgetmanagement.budget.service.BudgetRepository;
+
+import javax.persistence.PersistenceException;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,60 +32,45 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = "spring.cloud.config.enabled=false"
 )
 @AutoConfigureMockMvc
-public class JarControllerPostTests {
-
+public class BudgetControllerPostTests {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private JarRepository jarRepository;
+    private BudgetRepository budgetRepository;
 
-    // POST /api/budgets/{budgetId}/jars
+    // POST /api/budgets
 
     @Test
-    public void when_jar_is_created_then_response_status_and_headers_are_correct() throws Exception {
+    public void when_budget_is_created_then_response_status_and_headers_are_correct() throws Exception {
         // Given:
-        Jar jarInRequestBody = new Jar()
-                .setJarName("name")
-                .setBudgetId(1L)
-                .setCapacity(5L)
-                .setCurrentAmount(1L);
-        Jar jar = new Jar()
-                .setJarName("name")
-                .setBudgetId(1L)
-                .setCapacity(5L)
-                .setCurrentAmount(1L)
-                .setId(1L);
-        when(jarRepository.save(any(Jar.class)))
-                .thenReturn(jar);
+        Budget budgetFromBody = new Budget().setFamilyId(5L);
+        // When:
+        when(budgetRepository.save(any(Budget.class)))
+                .thenReturn(budgetFromBody.setId(1L));
         // Then:
-        mockMvc.perform(post("/api/budgets/1/jars")
+        mockMvc.perform(post("/api/budgets")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
+                .content(new ObjectMapper().writeValueAsString(budgetFromBody)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
     }
 
     @Test
-    public void when_budgetId_does_not_match_then_response_status_and_headers_are_ok() throws Exception {
+    public void when_budget_is_not_created_then_response_is_correct() throws Exception {
         // Given:
-        Jar jarInRequestBody = new Jar()
-                .setJarName("name")
-                .setBudgetId(1L)
-                .setCapacity(5L)
-                .setCurrentAmount(1L);
-
+        Budget budgetFromBody = new Budget().setFamilyId(5L);
+        // When:
+        doThrow(PersistenceException.class).when(budgetRepository).save(any(Budget.class));
         // Then:
-        mockMvc.perform(post("/api/budgets/2/jars")
+        mockMvc.perform(post("/api/budgets")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
+                .content(new ObjectMapper().writeValueAsString(budgetFromBody)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()))
-                .andExpect(content().string(containsString("Budget id in body and path don't match.")));
-
+                .andExpect(content().string(containsString("Something bad happened, check your posted data")));
     }
-
 }
