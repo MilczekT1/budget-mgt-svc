@@ -106,7 +106,7 @@ public class JarTest {
     }
 
     @Test
-    public void merge_throws_NPE_if_car_is_null() {
+    public void merge_throws_NPE_if_jar_is_null() {
         // Given:
         Jar firstJar = new Jar();
         // When:

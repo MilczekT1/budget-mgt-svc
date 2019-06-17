@@ -11,12 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
-import pl.konradboniecki.budget.budgetmanagement.budget.model.Jar;
-import pl.konradboniecki.budget.budgetmanagement.budget.service.JarRepository;
+import pl.konradboniecki.budget.budgetmanagement.budget.model.Expense;
+import pl.konradboniecki.budget.budgetmanagement.budget.service.ExpenseRepository;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -31,62 +31,62 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = "spring.cloud.config.enabled=false"
 )
 @AutoConfigureMockMvc
-public class JarControllerPutTests {
+public class ExpenseControllerPutTests {
 
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private JarRepository jarRepository;
+    private ExpenseRepository expenseRepository;
 
     @Test
-    public void when_jar_is_updated_then_response_is_ok() throws Exception {
+    public void when_expense_is_updated_then_response_is_ok() throws Exception {
         // Given:
-        Long jarId = 1L;
-        Jar originJar = new Jar()
-                .setId(jarId)
-                .setJarName("name")
-                .setBudgetId(2L)
-                .setCapacity(4L)
-                .setCurrentAmount(3L);
-        Jar jarInRequestBody = new Jar()
-                .setId(jarId)
-                .setJarName("modifiedName")
+        Long expenseId = 1L;
+        Expense originExpense = new Expense()
+                .setId(1L)
                 .setBudgetId(1L)
-                .setCapacity(5L)
-                .setCurrentAmount(4L);
+                .setLabelId(1L)
+                .setComment("comment")
+                .setAmount(1L);
+        Expense expenseInRequestBody = new Expense()
+                .setId(1L)
+                .setBudgetId(1L)
+                .setLabelId(1L)
+                .setComment("edited_comment")
+                .setAmount(1L);
 
+        Expense mergedExpense = originExpense.mergeWith(expenseInRequestBody);
         // When:
-        Jar mergedJar = originJar.mergeWith(jarInRequestBody);
-        when(jarRepository.findByIdAndBudgetId(jarId, 1L)).thenReturn(Optional.of(originJar));
-        when(jarRepository.save(any(Jar.class))).thenReturn(mergedJar);
+        when(expenseRepository.findByIdAndBudgetId(expenseId, 1L)).thenReturn(Optional.of(originExpense));
+        when(expenseRepository.save(any(Expense.class))).thenReturn(mergedExpense);
 
         // Then:
-        mockMvc.perform(put("/api/budgets/1/jars/1")
+        mockMvc.perform(put("/api/budgets/1/expenses/1")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
+                .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
     }
 
     @Test
-    public void when_jar_is_not_found_during_update_then_response_is_ok() throws Exception {
+    public void when_expense_is_not_found_during_update_then_response_is_ok() throws Exception {
         // Given:
-        Long jarId = 1L;
-        Jar jarInRequestBody = new Jar()
-                .setId(jarId)
-                .setJarName("modifiedName")
+        Long expenseId = 1L;
+        Expense expenseInRequestBody = new Expense()
+                .setId(1L)
                 .setBudgetId(1L)
-                .setCapacity(5L)
-                .setCurrentAmount(4L);
+                .setLabelId(1L)
+                .setComment("edited_comment")
+                .setAmount(1L);
         // When:
-        when(jarRepository.findByIdAndBudgetId(jarId, 1L)).thenReturn(Optional.empty());
+        when(expenseRepository.findByIdAndBudgetId(expenseId, 1L)).thenReturn(Optional.empty());
         // Then:
-        mockMvc.perform(put("/api/budgets/1/jars/1")
+        mockMvc.perform(put("/api/budgets/1/expenses/1")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
+                .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));

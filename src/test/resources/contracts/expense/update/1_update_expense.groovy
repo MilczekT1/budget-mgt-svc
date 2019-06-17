@@ -1,4 +1,4 @@
-package contracts.jar.update
+package contracts.expense.update
 
 import org.springframework.cloud.contract.spec.Contract
 
@@ -7,16 +7,16 @@ import org.springframework.cloud.contract.spec.Contract
 		request {
 			priority(1)
 			method PUT()
-			url("/api/budgets/1/jars/1")
+			url("/api/budgets/1/expenses/1")
 			headers {
 				accept applicationJson()
 				contentType applicationJson()
 			}
 			body(
+				id: 1L,
 				budgetId: 1L,
-				jarName: value(producer("modifiedName"), consumer(anyNonBlankString())),
-				capacity: value(producer(5L), consumer(anyPositiveInt())),
-				currentAmount: value(producer(4L), consumer(anyPositiveInt())),
+				labelId: 1L,
+				comment: value(producer("edited_comment"), consumer(anyNonBlankString()))
 			)
 		}
 		response {
@@ -27,10 +27,10 @@ import org.springframework.cloud.contract.spec.Contract
 			body(
 				id: 1L,
 				budgetId: fromRequest().body("budgetId"),
-				jarName: fromRequest().body("jarName"),
-				capacity: fromRequest().body("capacity"),
-				currentAmount: fromRequest().body("currentAmount"),
-				status: "IN PROGRESS"
+				labelId: fromRequest().body("labelId"),
+				amount: anyPositiveInt(),
+				comment: fromRequest().body("comment"),
+				expenseDate: regex("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{1,6}Z")
 			)
 		}
 	},
@@ -38,16 +38,15 @@ import org.springframework.cloud.contract.spec.Contract
 		request {
 			priority(2)
 			method PUT()
-			url("/api/budgets/1/jars/2")
+			url("/api/budgets/1/expenses/2")
 			headers {
 				accept applicationJson()
 				contentType applicationJson()
 			}
 			body(
+				id: 2L,
 				budgetId: 1L,
-				jarName: value(producer("modifiedName"), consumer(anyNonBlankString())),
-				capacity: value(producer(5L), consumer(anyPositiveInt())),
-				currentAmount: value(producer(4L), consumer(anyPositiveInt())),
+				amount: value(producer(5L), consumer(anyPositiveInt())),
 			)
 		}
 		response {
@@ -59,7 +58,7 @@ import org.springframework.cloud.contract.spec.Contract
 				"timestamp": value(regex("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{1,6}Z")),
 				"status": 404,
 				"statusName": "NOT_FOUND",
-				"message": "Jar with id: 2 not found in budget with id: 1"
+				"message": "Expense with id: 2 not found in budget with id: 1."
 			)
 		}
 	}

@@ -11,11 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
-import pl.konradboniecki.budget.budgetmanagement.budget.model.Jar;
-import pl.konradboniecki.budget.budgetmanagement.budget.service.JarRepository;
+import pl.konradboniecki.budget.budgetmanagement.budget.model.Expense;
+import pl.konradboniecki.budget.budgetmanagement.budget.service.ExpenseRepository;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,36 +31,37 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = "spring.cloud.config.enabled=false"
 )
 @AutoConfigureMockMvc
-public class JarControllerPostTests {
+public class ExpenseControllerPostTests {
 
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private JarRepository jarRepository;
+    private ExpenseRepository expenseRepository;
 
-    // POST /api/budgets/{budgetId}/jars
+    // POST /api/budgets/{budgetId}/expenses
 
     @Test
-    public void when_jar_is_created_then_response_status_and_headers_are_correct() throws Exception {
+    public void when_expense_is_created_then_response_status_and_headers_are_correct() throws Exception {
         // Given:
-        Jar jarInRequestBody = new Jar()
-                .setJarName("name")
+        Expense expenseInRequestBody = new Expense()
+                .setLabelId(1L)
                 .setBudgetId(1L)
-                .setCapacity(5L)
-                .setCurrentAmount(1L);
-        Jar jar = new Jar()
-                .setJarName("name")
+                .setComment("comment")
+                .setAmount(1L);
+        Expense expense = new Expense()
+                .setLabelId(1L)
                 .setBudgetId(1L)
-                .setCapacity(5L)
-                .setCurrentAmount(1L)
-                .setId(1L);
-        when(jarRepository.save(any(Jar.class)))
-                .thenReturn(jar);
+                .setComment("comment")
+                .setAmount(1L)
+                .setId(1L)
+                .setExpenseDate(ZonedDateTime.now(ZoneId.of("UTC")));
+        when(expenseRepository.save(expenseInRequestBody))
+                .thenReturn(expense);
         // Then:
-        mockMvc.perform(post("/api/budgets/1/jars")
+        mockMvc.perform(post("/api/budgets/1/expenses")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
+                .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
@@ -67,17 +70,17 @@ public class JarControllerPostTests {
     @Test
     public void when_budgetId_does_not_match_then_response_status_and_headers_are_ok() throws Exception {
         // Given:
-        Jar jarInRequestBody = new Jar()
-                .setJarName("name")
+        Expense expenseInRequestBody = new Expense()
+                .setLabelId(1L)
                 .setBudgetId(1L)
-                .setCapacity(5L)
-                .setCurrentAmount(1L);
+                .setComment("comment")
+                .setAmount(1L);
 
         // Then:
-        mockMvc.perform(post("/api/budgets/2/jars")
+        mockMvc.perform(post("/api/budgets/2/expenses")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
+                .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()))
