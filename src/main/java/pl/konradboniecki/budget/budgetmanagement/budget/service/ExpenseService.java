@@ -41,7 +41,6 @@ public class ExpenseService {
 
     public Expense saveExpense(Expense expenseFromBody, Long budgetIdFromPath) {
         if (expenseFromBody.getBudgetId().equals(budgetIdFromPath)) {
-            System.out.println(expenseFromBody);
             return expenseRepository.save(expenseFromBody);
         } else {
             throw new ExpenseCreationException("Budget id in body and path don't match.");
