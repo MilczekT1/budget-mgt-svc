@@ -20,7 +20,6 @@ import org.springframework.cloud.contract.spec.Contract
 			body(
 				id: value(fromRequest().path(4)),
 				budgetId: value(fromRequest().path(2)),
-				labelId: value(anyPositiveInt()),
 				amount: value(anyPositiveInt()),
 				comment: value(anyNonEmptyString()),
 				expenseDate: value(regex("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{1,6}Z"))

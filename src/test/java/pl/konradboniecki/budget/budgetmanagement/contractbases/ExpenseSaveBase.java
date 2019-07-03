@@ -46,14 +46,12 @@ public class ExpenseSaveBase {
     public void mock_creation_success_with_all_properties(){
         Expense mockedExpenseInRequestBody = new Expense()
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setComment("comment")
                 .setAmount(5L)
                 .setId(null)
                 .setExpenseDate(null);
         Expense mockedExpenseInResponseBody = new Expense()
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setComment("comment")
                 .setAmount(5L)
                 .setId(1L)
@@ -71,7 +69,6 @@ public class ExpenseSaveBase {
         Expense mockedExpenseInResponseBody = new Expense()
                 .setBudgetId(1L)
                 .setAmount(5L)
-                .setLabelId(null)
                 .setComment(null)
                 .setId(1L)
                 .setExpenseDate(ZonedDateTime.parse("2019-06-16T10:22:54.246625Z"));

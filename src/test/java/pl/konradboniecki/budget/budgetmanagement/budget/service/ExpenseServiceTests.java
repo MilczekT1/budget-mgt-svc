@@ -40,8 +40,7 @@ public class ExpenseServiceTests {
                 .setAmount(5L)
                 .setBudgetId(1L)
                 .setId(1L)
-                .setComment("testComment")
-                .setLabelId(1L);
+                .setComment("testComment");
         when(expenseRepository.findByIdAndBudgetId(1L,1L))
                 .thenReturn(Optional.of(mockedExpense));
         // When:

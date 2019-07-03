@@ -45,13 +45,11 @@ public class ExpenseControllerPutTests {
         Expense originExpense = new Expense()
                 .setId(1L)
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setComment("comment")
                 .setAmount(1L);
         Expense expenseInRequestBody = new Expense()
                 .setId(1L)
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setComment("edited_comment")
                 .setAmount(1L);
 
@@ -77,7 +75,6 @@ public class ExpenseControllerPutTests {
         Expense expenseInRequestBody = new Expense()
                 .setId(1L)
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setComment("edited_comment")
                 .setAmount(1L);
         // When:

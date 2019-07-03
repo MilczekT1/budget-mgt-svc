@@ -61,8 +61,7 @@ public class ExpenseControllerGetTests {
                 .setAmount(5L)
                 .setBudgetId(1L)
                 .setId(1L)
-                .setComment("testComment")
-                .setLabelId(1L);
+                .setComment("testComment");
         when(expenseRepository.findByIdAndBudgetId(1L,1L))
                 .thenReturn(Optional.of(mockedExpense));
         // Then:
@@ -81,14 +80,12 @@ public class ExpenseControllerGetTests {
         Expense firstExpense = new Expense()
                 .setId(1L)
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setAmount(3L)
                 .setComment("test_comments_1")
                 .setExpenseDate(ZonedDateTime.parse("2019-06-16T10:22:54.246625Z"));
         Expense secondExpense = new Expense()
                 .setId(2L)
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setAmount(4L)
                 .setComment("test_comments_2")
                 .setExpenseDate(ZonedDateTime.parse("2019-06-16T10:28:23.053553Z"));

@@ -15,7 +15,6 @@ import org.springframework.cloud.contract.spec.Contract
 			body(
 				id: 1L,
 				budgetId: 1L,
-				labelId: 1L,
 				comment: value(producer("edited_comment"), consumer(anyNonBlankString()))
 			)
 		}
@@ -27,7 +26,6 @@ import org.springframework.cloud.contract.spec.Contract
 			body(
 				id: 1L,
 				budgetId: fromRequest().body("budgetId"),
-				labelId: fromRequest().body("labelId"),
 				amount: anyPositiveInt(),
 				comment: fromRequest().body("comment"),
 				expenseDate: regex("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{1,6}Z")

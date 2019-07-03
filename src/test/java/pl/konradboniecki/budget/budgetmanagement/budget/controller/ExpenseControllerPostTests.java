@@ -44,12 +44,10 @@ public class ExpenseControllerPostTests {
     public void when_expense_is_created_then_response_status_and_headers_are_correct() throws Exception {
         // Given:
         Expense expenseInRequestBody = new Expense()
-                .setLabelId(1L)
                 .setBudgetId(1L)
                 .setComment("comment")
                 .setAmount(1L);
         Expense expense = new Expense()
-                .setLabelId(1L)
                 .setBudgetId(1L)
                 .setComment("comment")
                 .setAmount(1L)
@@ -71,7 +69,6 @@ public class ExpenseControllerPostTests {
     public void when_budgetId_does_not_match_then_response_status_and_headers_are_ok() throws Exception {
         // Given:
         Expense expenseInRequestBody = new Expense()
-                .setLabelId(1L)
                 .setBudgetId(1L)
                 .setComment("comment")
                 .setAmount(1L);

@@ -22,8 +22,6 @@ public class Expense {
 
     @Column(name = "budget_id")
     private Long budgetId;
-    @Column(name = "label_id")
-    private Long labelId;
     @Column(name = "amount")
     private Long amount;
     @Column(name = "comment")
@@ -38,8 +36,6 @@ public class Expense {
             setId(secondExpense.getId());
         if (secondExpense.getBudgetId() != null)
             setBudgetId(secondExpense.getBudgetId());
-        if (secondExpense.getLabelId() != null)
-            setLabelId(secondExpense.getLabelId());
         if (secondExpense.getAmount() != null)
             setAmount(secondExpense.getAmount());
         if (!StringUtils.isEmpty(secondExpense.getComment()))

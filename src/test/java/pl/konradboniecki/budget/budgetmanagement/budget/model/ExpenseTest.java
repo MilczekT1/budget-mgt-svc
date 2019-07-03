@@ -18,14 +18,12 @@ class ExpenseTest {
         Expense expense = new Expense()
                 .setId(1L)
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setComment("1")
                 .setAmount(1L)
                 .setExpenseDate(ZonedDateTime.now());
         Expense expenseWithSetProperties = new Expense()
                 .setId(2L)
                 .setBudgetId(2L)
-                .setLabelId(2L)
                 .setComment("2")
                 .setAmount(2L)
                 .setExpenseDate(ZonedDateTime.now());
@@ -35,7 +33,6 @@ class ExpenseTest {
         Assertions.assertAll(
                 () -> assertThat(mergedExpense.getId()).isEqualTo(expenseWithSetProperties.getId()),
                 () -> assertThat(mergedExpense.getBudgetId()).isEqualTo(expenseWithSetProperties.getBudgetId()),
-                () -> assertThat(mergedExpense.getLabelId()).isEqualTo(expenseWithSetProperties.getLabelId()),
                 () -> assertThat(mergedExpense.getComment()).isEqualTo(expenseWithSetProperties.getComment()),
                 () -> assertThat(mergedExpense.getAmount()).isEqualTo(expenseWithSetProperties.getAmount()),
                 () -> assertThat(mergedExpense.getExpenseDate()).isEqualTo(expenseWithSetProperties.getExpenseDate())
@@ -48,14 +45,12 @@ class ExpenseTest {
         Expense expense = new Expense()
                 .setId(1L)
                 .setBudgetId(1L)
-                .setLabelId(1L)
                 .setComment("1")
                 .setAmount(1L)
                 .setExpenseDate(ZonedDateTime.now());
         Expense expenseWitNullProperties = new Expense()
                 .setId(2L)
                 .setBudgetId(2L)
-                .setLabelId(2L)
                 .setComment("2")
                 .setAmount(2L)
                 .setExpenseDate(ZonedDateTime.now());
@@ -65,7 +60,6 @@ class ExpenseTest {
         Assertions.assertAll(
                 () -> assertThat(mergedExpense.getId()).isEqualTo(expense.getId()),
                 () -> assertThat(mergedExpense.getBudgetId()).isEqualTo(expense.getBudgetId()),
-                () -> assertThat(mergedExpense.getLabelId()).isEqualTo(expense.getLabelId()),
                 () -> assertThat(mergedExpense.getComment()).isEqualTo(expense.getComment()),
                 () -> assertThat(mergedExpense.getAmount()).isEqualTo(expense.getAmount()),
                 () -> assertThat(mergedExpense.getExpenseDate()).isEqualTo(expense.getExpenseDate())
