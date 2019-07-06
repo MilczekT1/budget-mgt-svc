@@ -1,4 +1,17 @@
 version: 2
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+
 jobs:
   build:
     docker:
@@ -41,16 +54,6 @@ jobs:
         command: |
           mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-    - store_test_results:
-        paths:
-        - target/surefire-reports
-    - store_artifacts:
-        path: target/surefire-reports/surefire-report.html
-    - store_artifacts:
-        path: target/site/jacoco/
-    - store_artifacts:
-        path: target/surefire-reports
-
     - run:
         name: Build and push docker image
         command: |
@@ -60,6 +63,43 @@ jobs:
           if [ "$CIRCLE_BRANCH" != "master" ]; then
             TAG=$CIRCLE_PROJECT_REPONAME-0.5.$CIRCLE_BUILD_NUM-PR
           fi
+
           docker build -t konradboniecki/budget:$TAG .
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push konradboniecki/budget:$TAG
+
+          mkdir shared_workspace
+          touch shared_workspace/tag.txt
+          echo $TAG > shared_workspace/tag.txt
+
+    - store_test_results:
+        paths:
+        - target/surefire-reports
+    - store_artifacts:
+        path: target/surefire-reports/surefire-report.html
+    - store_artifacts:
+        path: target/site/jacoco/
+    - store_artifacts:
+        path: target/surefire-reports
+    - persist_to_workspace:
+        root: ~/repo
+        paths:
+          - shared_workspace
+
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "e7:ba:ee:08:1c:20:e5:43:d1:fe:81:1d:0b:a5:ad:d1"
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Deploy Over SSH
+          command: |
+            cd /home/circleci/repo/shared_workspace
+            export LC_BUDGET_MGT_TAG=$(cat tag.txt)
+            echo "================ ATTEMPTING TO DEPLOY $LC_BUDGET_MGT_TAG ================"
+            ssh -t -o SendEnv=LC_BUDGET_MGT_TAG root@77.55.237.245 'BUDGET_MGT_TAG=$LC_BUDGET_MGT_TAG; unset LC_BUDGET_MGT_TAG; export BUDGET_MGT_TAG; echo "export BUDGET_MGT_TAG=$BUDGET_MGT_TAG" >> ~/.bashrc; docker-compose -f /root/BUDGET/docker-compose.yaml up -d --no-deps budget-mgt'
+          no_output_timeout: 3m
