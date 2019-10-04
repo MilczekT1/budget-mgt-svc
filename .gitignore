@@ -12,6 +12,7 @@
 .properties
 
 ### IntelliJ IDEA ###
+!.idea/runConfigurations/
 .idea
 *.iws
 *.iml

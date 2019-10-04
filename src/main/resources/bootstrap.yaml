@@ -1,0 +1,24 @@
+spring:
+  profiles: config_server
+  application.name: budget-management
+  cloud.config:
+    enabled: true
+    fail-fast: true
+    retry.max-attempts: 10
+    username: pluralsight
+    password: pluralsight
+encrypt.key: 0e24b037-6ed5-48e7-bd24-084e8b876eaf
+---
+spring:
+  profiles: config_server_prod
+  profiles.include: config_server
+  cloud.config.uri: http://config_server:8888
+---
+spring:
+  profiles: config_server_local
+  profiles.include: config_server
+  cloud.config.uri: http://konradboniecki.com.pl:8888
+---
+spring:
+  profiles: default
+  profiles.include: config_server_prod
