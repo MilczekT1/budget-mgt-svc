@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -48,21 +49,23 @@ class ExpenseTest {
                 .setComment("1")
                 .setAmount(1L)
                 .setExpenseDate(ZonedDateTime.now());
-        Expense expenseWitNullProperties = new Expense()
-                .setId(2L)
-                .setBudgetId(2L)
-                .setComment("2")
-                .setAmount(2L)
-                .setExpenseDate(ZonedDateTime.now());
         // When:
-        Expense mergedExpense = expense.mergeWith(expenseWitNullProperties);
+        Expense mergedExpense = expense.mergeWith(new Expense());
         // Then:
         Assertions.assertAll(
-                () -> assertThat(mergedExpense.getId()).isEqualTo(expense.getId()),
-                () -> assertThat(mergedExpense.getBudgetId()).isEqualTo(expense.getBudgetId()),
-                () -> assertThat(mergedExpense.getComment()).isEqualTo(expense.getComment()),
-                () -> assertThat(mergedExpense.getAmount()).isEqualTo(expense.getAmount()),
+                () -> assertThat(mergedExpense.getId()).isEqualTo(1L),
+                () -> assertThat(mergedExpense.getBudgetId()).isEqualTo(1L),
+                () -> assertThat(mergedExpense.getComment()).isEqualTo("1"),
+                () -> assertThat(mergedExpense.getAmount()).isEqualTo(1L),
                 () -> assertThat(mergedExpense.getExpenseDate()).isEqualTo(expense.getExpenseDate())
         );
+    }
+
+    @Test
+    public void when_merge_with_null_then_throw_npe() {
+        // When:
+        Throwable npe = catchThrowable(() -> new Expense().mergeWith(null));
+        // Then:
+        assertThat(npe).isInstanceOf(NullPointerException.class);
     }
 }

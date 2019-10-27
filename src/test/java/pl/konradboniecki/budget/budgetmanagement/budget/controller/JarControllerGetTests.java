@@ -21,7 +21,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
@@ -46,9 +47,9 @@ public class JarControllerGetTests {
                 .thenReturn(Optional.empty());
         // Then:
         mockMvc.perform(get("/api/budgets/1/jars/1"))
-                .andExpect(status().isNotFound())
                 .andDo(print())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(containsString("Jar with id: 1 not found in budget with id: 1")));
 
     }
@@ -66,9 +67,9 @@ public class JarControllerGetTests {
                 .thenReturn(Optional.of(mockedJar));
         // Then:
         mockMvc.perform(get("/api/budgets/1/jars/1"))
-                .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
     }
 
@@ -93,8 +94,8 @@ public class JarControllerGetTests {
         when(jarRepository.findAllByBudgetId(1L)).thenReturn(jarList);
         // Then:
         mockMvc.perform(get("/api/budgets/1/jars"))
-                .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 }

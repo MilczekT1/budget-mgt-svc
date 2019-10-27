@@ -27,7 +27,7 @@ public class BudgetController {
             @RequestParam(name = "idType", required = false, defaultValue = "id") String idType) {
 
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(budgetService.findByOrThrow(id, idType));
     }
 
@@ -35,7 +35,7 @@ public class BudgetController {
     public ResponseEntity<Budget> createBudget(@RequestBody Budget budgetFromBody) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(budgetService.saveBudget(budgetFromBody));
     }
 }

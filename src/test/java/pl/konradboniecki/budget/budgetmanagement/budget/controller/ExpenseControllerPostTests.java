@@ -22,7 +22,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
@@ -57,12 +58,12 @@ public class ExpenseControllerPostTests {
                 .thenReturn(expense);
         // Then:
         mockMvc.perform(post("/api/budgets/1/expenses")
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -75,12 +76,12 @@ public class ExpenseControllerPostTests {
 
         // Then:
         mockMvc.perform(post("/api/budgets/2/expenses")
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(containsString("Budget id in body and path don't match.")));
 
     }

@@ -6,13 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
 import pl.konradboniecki.budget.budgetmanagement.budget.model.Expense;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,26 +87,33 @@ public class ExpenseServiceTests {
     }
 
     @Test
-    public void given_findAll_by_budgetId_when_expenses_not_found_then_returnEmpty() {
+    public void given_findAll_by_budgetId_when_expenses_not_found_then_return_empty_items() {
         // Given:
-        when(expenseRepository.findAllByBudgetId(2L)).thenReturn(Collections.EMPTY_LIST);
+        ArrayList<Expense> expenseList = new ArrayList<>();
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<Expense> page = new PageImpl<>(expenseList, pageable, 0);
+        when(expenseRepository.findAllByBudgetId(eq(2L), eq(pageable)))
+                .thenReturn(page);
         // When:
-        List<Expense> list = expenseService.findAllExpensesByBudgetId(2L);
+        Page<Expense> pageWithExpenses = expenseService.findAllExpensesByBudgetId(2L, pageable);
         // Then:
-        assertThat(list).isEmpty();
+        assertThat(pageWithExpenses).isEmpty();
     }
 
     @Test
-    public void given_findAll_by_budgetId_when_expenses_found_then_returnEmpty() {
+    public void given_findAll_by_budgetId_when_expenses_found_then_return_items() {
         // Given:
-        List<Expense> expenseList = new ArrayList<>(2);
+        ArrayList<Expense> expenseList = new ArrayList<>();
         expenseList.add(new Expense());
         expenseList.add(new Expense());
-        when(expenseRepository.findAllByBudgetId(2L)).thenReturn(expenseList);
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<Expense> page = new PageImpl<>(expenseList, pageable, 0);
+        when(expenseRepository.findAllByBudgetId(eq(2L), eq(pageable)))
+                .thenReturn(page);
         // When:
-        List<Expense> list = expenseService.findAllExpensesByBudgetId(2L);
+        Page<Expense> pageWithExpenses = expenseService.findAllExpensesByBudgetId(2L, pageable);
         // Then:
-        assertThat(list.size()).isEqualTo(2);
+        assertThat(pageWithExpenses.getContent().size()).isEqualTo(2L);
     }
 
     @Test

@@ -2,10 +2,11 @@ package pl.konradboniecki.budget.budgetmanagement.budget.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.konradboniecki.budget.budgetmanagement.budget.model.Expense;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,8 +28,8 @@ public class ExpenseService {
         }
     }
 
-    public List<Expense> findAllExpensesByBudgetId(Long budgetId) {
-        return expenseRepository.findAllByBudgetId(budgetId);
+    public Page<Expense> findAllExpensesByBudgetId(Long budgetId, Pageable pageable) {
+        return expenseRepository.findAllByBudgetId(budgetId, pageable);
     }
 
     public void removeExpenseFromBudgetOrThrow(Long expenseId, Long budgetId) {

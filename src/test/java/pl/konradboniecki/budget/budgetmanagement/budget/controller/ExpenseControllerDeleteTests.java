@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
@@ -58,6 +59,7 @@ public class ExpenseControllerDeleteTests {
         mockMvc.perform(delete("/api/budgets/1/expenses/1"))
                 .andExpect(status().isNotFound())
                 .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(containsString("Expense with id: 1 not found in budget with id: 1.")));
     }
 }

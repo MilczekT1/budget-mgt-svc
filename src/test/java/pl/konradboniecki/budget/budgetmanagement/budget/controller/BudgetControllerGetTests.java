@@ -20,7 +20,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
@@ -46,9 +47,9 @@ public class BudgetControllerGetTests {
         when(budgetRepository.findById(budgetId)).thenReturn(Optional.of(existingBudget));
         // Then:
         mockMvc.perform(get("/api/budgets/" + budgetId))
-                .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -58,9 +59,9 @@ public class BudgetControllerGetTests {
         when(budgetRepository.findById(budgetId)).thenReturn(Optional.empty());
         // Then:
         mockMvc.perform(get("/api/budgets/" + budgetId))
-                .andExpect(status().isNotFound())
                 .andDo(print())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -71,9 +72,9 @@ public class BudgetControllerGetTests {
         when(budgetRepository.findByFamilyId(familyId)).thenReturn(Optional.of(existingBudget));
         // Then:
         mockMvc.perform(get("/api/budgets/" + familyId + "?idType=family"))
-                .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -83,17 +84,17 @@ public class BudgetControllerGetTests {
         when(budgetRepository.findByFamilyId(familyId)).thenReturn(Optional.empty());
         // Then:
         mockMvc.perform(get("/api/budgets/" + familyId + "?idType=family"))
-                .andExpect(status().isNotFound())
                 .andDo(print())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
     public void when_parameter_idType_is_invalid_then_response_is_correct() throws Exception {
         mockMvc.perform(get("/api/budgets/" + 5L + "?idType=there_is_no_such_type"))
-                .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(containsString("Invalid argument idType=there_is_no_such_type")));
     }
 }

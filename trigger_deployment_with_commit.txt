@@ -34,3 +34,15 @@
 
 
 "2019-06-16T10:22:54.246625Z"
+-------------------------------------------
+    "items": [
+    ]
+    "_meta": {
+        "limit": 100,
+        "offset": 0,
+        "pageCount": 1,
+        "totalCount": 34,
+        "page": 1,
+        "sort": "created+ASC"
+    }
+    https://www.baeldung.com/spring-data-jpa-pagination-sorting

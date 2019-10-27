@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -62,12 +62,12 @@ public class JarControllerPutTests {
 
         // Then:
         mockMvc.perform(put("/api/budgets/1/jars/1")
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -84,11 +84,11 @@ public class JarControllerPutTests {
         when(jarRepository.findByIdAndBudgetId(jarId, 1L)).thenReturn(Optional.empty());
         // Then:
         mockMvc.perform(put("/api/budgets/1/jars/1")
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8.toString()));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 }

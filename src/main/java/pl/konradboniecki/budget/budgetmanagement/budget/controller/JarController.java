@@ -25,14 +25,14 @@ public class JarController {
     public ResponseEntity<Jar> findJar(@PathVariable("budgetId") Long budgetId,
                                        @PathVariable("jarId") Long jarId) {
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(jarService.findByIdAndBudgetIdOrThrow(jarId, budgetId));
     }
 
     @GetMapping
     public ResponseEntity<List<Jar>> findJars(@PathVariable("budgetId") Long budgetId) {
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(jarService.findAllJarsByBudgetId(budgetId));
     }
 
@@ -41,7 +41,7 @@ public class JarController {
                                        @PathVariable("budgetId") Long budgetId) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(jarService.saveJar(jarToSave, budgetId));
     }
 
@@ -51,7 +51,7 @@ public class JarController {
                                          @RequestBody Jar updatedJar) {
         return ResponseEntity
                 .ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(jarService.updateJar(jarId, budgetId, updatedJar));
     }
 
