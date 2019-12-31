@@ -14,12 +14,12 @@ workflows:
           type: approval
           requires:
             - build
-      - deploy_feature:
-          requires:
-            - approve_feature_deployment
           filters:
             branches:
               only: /feature.*/
+      - deploy_feature:
+          requires:
+            - approve_feature_deployment
 jobs:
   build:
     docker:
