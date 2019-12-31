@@ -1,17 +1,25 @@
 version: 2
-
 workflows:
   version: 2
   build-and-deploy:
     jobs:
       - build
-      - deploy:
+      - deploy_master:
           requires:
             - build
           filters:
             branches:
               only: master
-
+      - approve_feature_deployment:
+          type: approval
+          requires:
+            - build
+      - deploy_feature:
+          requires:
+            - approve_feature_deployment
+          filters:
+            branches:
+              only: /feature.*/
 jobs:
   build:
     docker:
@@ -22,71 +30,81 @@ jobs:
       TERM: dumb
 
     steps:
-    - setup_remote_docker:
-        version: 18.05.0-ce
-        docker_layer_caching: false
-    - add_ssh_keys:
-        fingerprints:
-          - "5f:9d:14:91:16:7c:39:92:67:55:6d:78:65:7e:f4:64"
-    - run:
-        name: Clone Chassis and services for stubs
-        command: |
-          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/chassis.git ~/chassisRepo
-    - checkout
-#_______________________________________________________________
+      - setup_remote_docker:
+          version: 18.05.0-ce
+          docker_layer_caching: false
+      - add_ssh_keys:
+          fingerprints:
+            - "5f:9d:14:91:16:7c:39:92:67:55:6d:78:65:7e:f4:64"
+      - checkout
+      - run:
+          name: Download and install contracts
+          command: |
+            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/contract-repository.git ~/contractRepo
+            cd ~/contractRepo
+            sh install-contracts.sh
+      - run:
+          name: Download and install Chassis
+          command: |
+            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/chassis.git ~/chassisRepo
+            cd ~/chassisRepo
+            mvn clean install -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - run:
+          name: Build and run tests
+          command: |
+            mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-    - run:
-        name: Install maven
-        command: |
-          sudo apt-get update
-          sudo apt-get install maven
-    - run:
-        name: Install Chassis and stubs for contracts, download dependencies
-        command: |
-          LESS_LOGS=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - run:
+          name: Build and push docker image
+          command: |
+            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+            if [ "$CIRCLE_BRANCH" == "master" ]; then
+              TAG=$CIRCLE_PROJECT_REPONAME-$VERSION
+            fi
+            if [ "$CIRCLE_BRANCH" != "master" ]; then
+              TAG=$CIRCLE_PROJECT_REPONAME-$VERSION-$CIRCLE_BUILD_NUM-PR
+            fi
 
-          cd ~/chassisRepo
-          mvn clean install -DskipTests=true -B $LESS_LOGS
-          cd ~/repo
-          mvn dependency:go-offline -B $LESS_LOGS
-    - run:
-        name: Build and run tests
-        command: |
-          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+            docker build -t konradboniecki/budget:$TAG .
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push konradboniecki/budget:$TAG
 
-    - run:
-        name: Build and push docker image
-        command: |
-          if [ "$CIRCLE_BRANCH" == "master" ]; then
-            TAG=$CIRCLE_PROJECT_REPONAME-0.5.$CIRCLE_BUILD_NUM
-          fi
-          if [ "$CIRCLE_BRANCH" != "master" ]; then
-            TAG=$CIRCLE_PROJECT_REPONAME-0.5.$CIRCLE_BUILD_NUM-PR
-          fi
+            mkdir shared_workspace
+            touch shared_workspace/tag.txt
+            echo $TAG > shared_workspace/tag.txt
 
-          docker build -t konradboniecki/budget:$TAG .
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push konradboniecki/budget:$TAG
+      - store_test_results:
+          paths:
+            - target/surefire-reports
+      - store_artifacts:
+          path: target/surefire-reports/surefire-report.html
+      - store_artifacts:
+          path: target/site/jacoco/
+      - store_artifacts:
+          path: target/surefire-reports
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - shared_workspace
 
-          mkdir shared_workspace
-          touch shared_workspace/tag.txt
-          echo $TAG > shared_workspace/tag.txt
-
-    - store_test_results:
-        paths:
-        - target/surefire-reports
-    - store_artifacts:
-        path: target/surefire-reports/surefire-report.html
-    - store_artifacts:
-        path: target/site/jacoco/
-    - store_artifacts:
-        path: target/surefire-reports
-    - persist_to_workspace:
-        root: ~/repo
-        paths:
-          - shared_workspace
-
-  deploy:
+  deploy_master:
+    machine:
+      enabled: true
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "e7:ba:ee:08:1c:20:e5:43:d1:fe:81:1d:0b:a5:ad:d1"
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Deploy Over SSH
+          command: |
+            cd /home/circleci/repo/shared_workspace
+            export LC_BUDGET_MGT_TAG=$(cat tag.txt)
+            echo "================ ATTEMPTING TO DEPLOY $LC_BUDGET_MGT_TAG ================"
+            ssh -t -o SendEnv=LC_BUDGET_MGT_TAG root@77.55.237.245 'BUDGET_MGT_TAG=$LC_BUDGET_MGT_TAG; unset LC_BUDGET_MGT_TAG; export BUDGET_MGT_TAG; echo "export BUDGET_MGT_TAG=$BUDGET_MGT_TAG" >> ~/.bashrc; docker tag "konradboniecki/budget:$BUDGET_MGT_TAG" "konradboniecki/budget:tmpTag"; docker rmi "konradboniecki/budget:$BUDGET_MGT_TAG"; docker-compose -f /root/BUDGET/docker-compose.yaml up -d --no-deps budget-mgt; docker rmi "konradboniecki/budget:tmpTag" || true'
+          no_output_timeout: 3m
+  deploy_feature:
     machine:
       enabled: true
     steps:

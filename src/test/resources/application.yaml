@@ -5,7 +5,5 @@ budget:
 spring:
   jpa:
     open-in-view: false
-  zipkin:
-    enabled: false
   main:
     lazy-initialization: true
