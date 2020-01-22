@@ -45,8 +45,8 @@ public class JarService {
         }
     }
 
-    public Jar updateJar(Long originID, Long budgetId, Jar newJar) {
-        Jar origin = findByIdAndBudgetIdOrThrow(originID, budgetId);
+    public Jar updateJar(Long jarId, Long budgetId, Jar newJar) {
+        Jar origin = findByIdAndBudgetIdOrThrow(jarId, budgetId);
         return jarRepository.save(origin.mergeWith(newJar));
     }
 

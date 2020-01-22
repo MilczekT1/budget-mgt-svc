@@ -7,7 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
@@ -27,7 +27,7 @@ public class Expense {
     @Column(name = "comment")
     private String comment;
     @Column(name = "expense_date")
-    private ZonedDateTime expenseDate;
+    private Instant created;
 
     public Expense() {}
 
@@ -40,8 +40,8 @@ public class Expense {
             setAmount(secondExpense.getAmount());
         if (!StringUtils.isEmpty(secondExpense.getComment()))
             setComment(secondExpense.getComment());
-        if (secondExpense.getExpenseDate() != null)
-            setExpenseDate(secondExpense.getExpenseDate());
+        if (secondExpense.getCreated() != null)
+            setCreated(secondExpense.getCreated());
         return this;
     }
 }

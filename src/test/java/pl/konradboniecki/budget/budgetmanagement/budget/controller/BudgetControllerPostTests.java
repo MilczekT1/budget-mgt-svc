@@ -72,6 +72,6 @@ public class BudgetControllerPostTests {
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(containsString("Something bad happened, check your posted data")));
+                .andExpect(content().string(containsString("Unexpected error occurred.")));
     }
 }

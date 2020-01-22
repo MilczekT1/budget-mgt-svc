@@ -55,7 +55,7 @@ public class BudgetService {
             return budgetRepository.save(budget);
         } catch (PersistenceException e){
             log.error("Failed to save Budget: " + budget);
-            throw new InternalServerErrorException("Something bad happened, check your posted data", e);
+            throw new InternalServerErrorException("Unexpected error occurred.", e);
         }
     }
 }

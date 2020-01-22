@@ -24,9 +24,9 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedList> findExpenses(@PathVariable("budgetId") Long budgetId,
-                                                      @RequestParam(name = "page", defaultValue = "0") int offset,
-                                                      @RequestParam(name = "limit", defaultValue = "100") int limit) {
+    public ResponseEntity<PaginatedList<Expense>> findExpenses(@PathVariable("budgetId") Long budgetId,
+                                                               @RequestParam(name = "page", defaultValue = "0") int offset,
+                                                               @RequestParam(name = "limit", defaultValue = "100") int limit) {
         Pageable pageable = PageRequest.of(offset, limit);
         Page<Expense> expensePage = expenseService.findAllExpensesByBudgetId(budgetId, pageable);
         return ResponseEntity.ok()

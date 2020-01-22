@@ -40,7 +40,20 @@ public class BudgetControllerGetTests {
     // GET /api/budgets/{id}
 
     @Test
-    public void when_budget_is_found_by_id_then_response_status_and_headers_are_correct() throws Exception {
+    public void when_budget_is_found_by_id_param_then_response_status_and_headers_are_correct() throws Exception {
+        // Given:
+        Long budgetId = 1L;
+        Budget existingBudget = new Budget().setId(budgetId);
+        when(budgetRepository.findById(budgetId)).thenReturn(Optional.of(existingBudget));
+        // Then:
+        mockMvc.perform(get("/api/budgets/" + budgetId + "?idType=id"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void when_budget_is_found_by_id_default_then_response_status_and_headers_are_correct() throws Exception {
         // Given:
         Long budgetId = 1L;
         Budget existingBudget = new Budget().setId(budgetId);

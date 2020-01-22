@@ -53,7 +53,6 @@ jobs:
           name: Build and run tests
           command: |
             mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
       - run:
           name: Build and push docker image
           command: |
@@ -97,7 +96,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: Deploy Over SSH
+          name: Deploy Master Over SSH
           command: |
             cd /home/circleci/repo/shared_workspace
             export LC_BUDGET_MGT_TAG=$(cat tag.txt)
@@ -114,7 +113,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: Deploy Over SSH
+          name: Deploy Feature Over SSH
           command: |
             cd /home/circleci/repo/shared_workspace
             export LC_BUDGET_MGT_TAG=$(cat tag.txt)

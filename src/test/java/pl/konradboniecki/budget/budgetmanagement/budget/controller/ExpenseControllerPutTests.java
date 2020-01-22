@@ -1,6 +1,8 @@
 package pl.konradboniecki.budget.budgetmanagement.budget.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +12,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
 import pl.konradboniecki.budget.budgetmanagement.budget.model.Expense;
 import pl.konradboniecki.budget.budgetmanagement.budget.service.ExpenseRepository;
+import pl.konradboniecki.chassis.exceptions.ErrorDescription;
 
+import java.time.Instant;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -59,13 +65,20 @@ public class ExpenseControllerPutTests {
         when(expenseRepository.save(any(Expense.class))).thenReturn(mergedExpense);
 
         // Then:
-        mockMvc.perform(put("/api/budgets/1/expenses/1")
+        MvcResult mvcResult = mockMvc.perform(put("/api/budgets/1/expenses/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // And:
+        String responseBody = mvcResult.getResponse().getContentAsString();
+        Expense returnedExpense = new ObjectMapper().registerModule(new JavaTimeModule())
+                .readValue(responseBody, Expense.class);
+        Assertions.assertThat(returnedExpense).isNotNull();
+        Assertions.assertThat(returnedExpense).isEqualTo(mergedExpense);
     }
 
     @Test
@@ -80,12 +93,24 @@ public class ExpenseControllerPutTests {
         // When:
         when(expenseRepository.findByIdAndBudgetId(expenseId, 1L)).thenReturn(Optional.empty());
         // Then:
-        mockMvc.perform(put("/api/budgets/1/expenses/1")
+        MvcResult mvcResult = mockMvc.perform(put("/api/budgets/1/expenses/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // And:
+        String responseBody = mvcResult.getResponse().getContentAsString();
+        ErrorDescription errorDescription = new ObjectMapper().registerModule(new JavaTimeModule())
+                .readValue(responseBody, ErrorDescription.class);
+        Assertions.assertThat(errorDescription).isNotNull();
+        org.junit.jupiter.api.Assertions.assertAll(
+                () -> assertThat(errorDescription.getStatus()).isEqualTo(404),
+                () -> assertThat(errorDescription.getMessage()).isEqualTo("Expense with id: 1 not found in budget with id: 1."),
+                () -> assertThat(errorDescription.getStatusName()).isEqualTo("NOT_FOUND"),
+                () -> assertThat(errorDescription.getTimestamp()).isInstanceOf(Instant.class)
+        );
     }
 }

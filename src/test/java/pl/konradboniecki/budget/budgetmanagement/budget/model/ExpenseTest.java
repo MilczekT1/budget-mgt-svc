@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -21,13 +21,13 @@ class ExpenseTest {
                 .setBudgetId(1L)
                 .setComment("1")
                 .setAmount(1L)
-                .setExpenseDate(ZonedDateTime.now());
+                .setCreated(Instant.now());
         Expense expenseWithSetProperties = new Expense()
                 .setId(2L)
                 .setBudgetId(2L)
                 .setComment("2")
                 .setAmount(2L)
-                .setExpenseDate(ZonedDateTime.now());
+                .setCreated(Instant.now());
         // When:
         Expense mergedExpense = expense.mergeWith(expenseWithSetProperties);
         // Then:
@@ -36,7 +36,7 @@ class ExpenseTest {
                 () -> assertThat(mergedExpense.getBudgetId()).isEqualTo(expenseWithSetProperties.getBudgetId()),
                 () -> assertThat(mergedExpense.getComment()).isEqualTo(expenseWithSetProperties.getComment()),
                 () -> assertThat(mergedExpense.getAmount()).isEqualTo(expenseWithSetProperties.getAmount()),
-                () -> assertThat(mergedExpense.getExpenseDate()).isEqualTo(expenseWithSetProperties.getExpenseDate())
+                () -> assertThat(mergedExpense.getCreated()).isEqualTo(expenseWithSetProperties.getCreated())
         );
     }
 
@@ -48,7 +48,7 @@ class ExpenseTest {
                 .setBudgetId(1L)
                 .setComment("1")
                 .setAmount(1L)
-                .setExpenseDate(ZonedDateTime.now());
+                .setCreated(Instant.now());
         // When:
         Expense mergedExpense = expense.mergeWith(new Expense());
         // Then:
@@ -57,7 +57,7 @@ class ExpenseTest {
                 () -> assertThat(mergedExpense.getBudgetId()).isEqualTo(1L),
                 () -> assertThat(mergedExpense.getComment()).isEqualTo("1"),
                 () -> assertThat(mergedExpense.getAmount()).isEqualTo(1L),
-                () -> assertThat(mergedExpense.getExpenseDate()).isEqualTo(expense.getExpenseDate())
+                () -> assertThat(mergedExpense.getCreated()).isEqualTo(expense.getCreated())
         );
     }
 

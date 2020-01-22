@@ -22,6 +22,11 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.10.1</version>
+        </dependency>
         <!--Test libraries-->
         <dependency>
             <groupId>pl.konradboniecki</groupId>
@@ -64,8 +69,28 @@
                 <artifactId>spring-cloud-contract-maven-plugin</artifactId>
                 <configuration>
                     <testMode>EXPLICIT</testMode>
-                    <packageWithBaseClasses>pl.konradboniecki.budget.budgetmanagement.contractbases</packageWithBaseClasses>
+                    <contractsMode>LOCAL</contractsMode>
+                    <basePackageForTests>pl.konradboniecki.budget.budgetmanagement</basePackageForTests>
+                    <baseClassMappings>
+                        <baseClassMapping><!--MVC client mapping-->
+                            <contractPackageRegex>.*budget.*management.*mvc.*</contractPackageRegex>
+                            <baseClassFQN>pl.konradboniecki.budget.budgetmanagement.contractbases.MvcClientBase
+                            </baseClassFQN>
+                        </baseClassMapping>
+                    </baseClassMappings>
+                    <contractDependency>
+                        <groupId>pl.konradboniecki</groupId>
+                        <artifactId>contract-repository</artifactId>
+                        <version>0.5.0</version>
+                    </contractDependency>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.cloud</groupId>
+                        <artifactId>spring-cloud-contract-verifier</artifactId>
+                        <version>${chassis-spring-cloud.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

@@ -18,7 +18,7 @@ import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
 import pl.konradboniecki.budget.budgetmanagement.budget.model.Expense;
 import pl.konradboniecki.budget.budgetmanagement.budget.service.ExpenseRepository;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -79,7 +79,7 @@ public class ExpenseControllerGetTests {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("{\"id\":1,\"budgetId\":1,\"amount\":5,\"comment\":\"testComment\",\"expenseDate\":null}"));
+                .andExpect(content().json("{\"id\":1,\"budgetId\":1,\"amount\":5,\"comment\":\"testComment\",\"created\":null}"));
 
     }
 
@@ -93,13 +93,13 @@ public class ExpenseControllerGetTests {
                 .setBudgetId(1L)
                 .setAmount(3L)
                 .setComment("test_comments_1")
-                .setExpenseDate(ZonedDateTime.parse("2019-06-16T10:22:54.246625Z"));
+                .setCreated(Instant.parse("2019-06-16T10:22:54.246625Z"));
         Expense secondExpense = new Expense()
                 .setId(2L)
                 .setBudgetId(1L)
                 .setAmount(4L)
                 .setComment("test_comments_2")
-                .setExpenseDate(ZonedDateTime.parse("2019-06-16T10:28:23.053553Z"));
+                .setCreated(Instant.parse("2019-06-16T10:28:23.053553Z"));
         ArrayList<Expense> expenseList = new ArrayList<>();
         expenseList.add(firstExpense);
         expenseList.add(secondExpense);
@@ -126,7 +126,7 @@ public class ExpenseControllerGetTests {
                 .setBudgetId(1L)
                 .setAmount(3L)
                 .setComment("test_comments_1")
-                .setExpenseDate(ZonedDateTime.parse("2019-06-16T10:22:54.246625Z"));
+                .setCreated(Instant.parse("2019-06-16T10:22:54.246625Z"));
         ArrayList<Expense> expenseList = new ArrayList<>();
         expenseList.add(firstExpense);
         Pageable pageable = PageRequest.of(0, 1);
@@ -150,14 +150,14 @@ public class ExpenseControllerGetTests {
     }
 
     @Test
-    public void when_expenses_found_with_page_1_then_pagination_medatada_is_correct() throws Exception {
+    public void when_expenses_found_with_page_1_then_pagination_metadata_is_correct() throws Exception {
         // Given:
         Expense firstExpense = new Expense()
                 .setId(1L)
                 .setBudgetId(1L)
                 .setAmount(3L)
                 .setComment("test_comments_1")
-                .setExpenseDate(ZonedDateTime.parse("2019-06-16T10:22:54.246625Z"));
+                .setCreated(Instant.parse("2019-06-16T10:22:54.246625Z"));
         ArrayList<Expense> expenseList = new ArrayList<>();
         expenseList.add(firstExpense);
         Pageable pageable = PageRequest.of(1, 100);

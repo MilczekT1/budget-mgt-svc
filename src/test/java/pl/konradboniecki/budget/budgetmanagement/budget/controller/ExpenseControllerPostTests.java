@@ -14,8 +14,7 @@ import pl.konradboniecki.budget.budgetmanagement.BudgetManagementApplication;
 import pl.konradboniecki.budget.budgetmanagement.budget.model.Expense;
 import pl.konradboniecki.budget.budgetmanagement.budget.service.ExpenseRepository;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
@@ -53,7 +52,7 @@ public class ExpenseControllerPostTests {
                 .setComment("comment")
                 .setAmount(1L)
                 .setId(1L)
-                .setExpenseDate(ZonedDateTime.now(ZoneId.of("UTC")));
+                .setCreated(Instant.now());
         when(expenseRepository.save(expenseInRequestBody))
                 .thenReturn(expense);
         // Then:
