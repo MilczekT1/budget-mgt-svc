@@ -10,16 +10,18 @@ workflows:
           filters:
             branches:
               only: master
-      - approve_feature_deployment:
+      - approve_deployment:
           type: approval
           requires:
             - build
           filters:
             branches:
-              only: /feature.*/
-      - deploy_feature:
+              only:
+                - develop
+                - /feature.*/
+      - deploy:
           requires:
-            - approve_feature_deployment
+            - approve_deployment
 jobs:
   build:
     docker:
@@ -38,17 +40,18 @@ jobs:
             - "5f:9d:14:91:16:7c:39:92:67:55:6d:78:65:7e:f4:64"
       - checkout
       - run:
-          name: Download and install contracts
-          command: |
-            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/contract-repository.git ~/contractRepo
-            cd ~/contractRepo
-            sh install-contracts.sh
-      - run:
           name: Download and install Chassis
           command: |
             GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/chassis.git ~/chassisRepo
             cd ~/chassisRepo
             mvn clean install -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - run:
+          name: Download and install contracts
+          command: |
+            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/contract-repository.git ~/contractRepo
+            CONTRACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+            cd ~/contractRepo
+            bash install-contracts.sh BUDGET_MGT_V=$CONTRACT_VERSION
       - run:
           name: Build and run tests
           command: |
@@ -57,14 +60,15 @@ jobs:
           name: Build and push docker image
           command: |
             VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+            TAG=$CIRCLE_PROJECT_REPONAME-$VERSION-$CIRCLE_BUILD_NUM-PR
             if [ "$CIRCLE_BRANCH" == "master" ]; then
               TAG=$CIRCLE_PROJECT_REPONAME-$VERSION
             fi
-            if [ "$CIRCLE_BRANCH" != "master" ]; then
-              TAG=$CIRCLE_PROJECT_REPONAME-$VERSION-$CIRCLE_BUILD_NUM-PR
+            if [ "$CIRCLE_BRANCH" == "develop" ]; then
+              TAG=$CIRCLE_PROJECT_REPONAME-$VERSION-$CIRCLE_BUILD_NUM
             fi
 
-            docker build -t konradboniecki/budget:$TAG .
+            docker build -t konradboniecki/budget:$TAG . --build-arg ARTIFACT=budget-management-$VERSION.jar
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push konradboniecki/budget:$TAG
 
@@ -103,7 +107,7 @@ jobs:
             echo "================ ATTEMPTING TO DEPLOY $LC_BUDGET_MGT_TAG ================"
             ssh -t -o SendEnv=LC_BUDGET_MGT_TAG root@77.55.237.245 'BUDGET_MGT_TAG=$LC_BUDGET_MGT_TAG; unset LC_BUDGET_MGT_TAG; export BUDGET_MGT_TAG; echo "export BUDGET_MGT_TAG=$BUDGET_MGT_TAG" >> ~/.bashrc; docker tag "konradboniecki/budget:$BUDGET_MGT_TAG" "konradboniecki/budget:tmpTag"; docker rmi "konradboniecki/budget:$BUDGET_MGT_TAG"; docker-compose -f /root/BUDGET/docker-compose.yaml up -d --no-deps budget-mgt; docker rmi "konradboniecki/budget:tmpTag" || true'
           no_output_timeout: 3m
-  deploy_feature:
+  deploy:
     machine:
       enabled: true
     steps:

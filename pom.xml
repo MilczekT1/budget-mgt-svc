@@ -11,7 +11,7 @@
 
     <groupId>pl.konradboniecki.budget</groupId>
     <artifactId>budget-management</artifactId>
-    <version>0.5.0</version>
+    <version>0.1.0</version>
 
     <dependencies>
         <dependency>
@@ -70,6 +70,7 @@
                 <configuration>
                     <testMode>EXPLICIT</testMode>
                     <contractsMode>LOCAL</contractsMode>
+                    <includedFiles>**/budget-management/${project.version}/**/*</includedFiles>
                     <basePackageForTests>pl.konradboniecki.budget.budgetmanagement</basePackageForTests>
                     <baseClassMappings>
                         <baseClassMapping><!--MVC client mapping-->
@@ -80,8 +81,8 @@
                     </baseClassMappings>
                     <contractDependency>
                         <groupId>pl.konradboniecki</groupId>
-                        <artifactId>contract-repository</artifactId>
-                        <version>0.5.0</version>
+                        <artifactId>contracts</artifactId>
+                        <version>0.1.0</version>
                     </contractDependency>
                 </configuration>
                 <dependencies>
