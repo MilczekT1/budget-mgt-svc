@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - setup_remote_docker:
-          version: 18.05.0-ce
+          version: 18.06.0-ce
           docker_layer_caching: false
       - add_ssh_keys:
           fingerprints:
@@ -42,13 +42,13 @@ jobs:
       - run:
           name: Download and install Chassis
           command: |
-            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/chassis.git ~/chassisRepo
+            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone -q --depth 1 git@bitbucket.org:konradboniecki/chassis.git ~/chassisRepo
             cd ~/chassisRepo
             mvn clean install -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - run:
           name: Download and install contracts
           command: |
-            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@bitbucket.org:konradboniecki/contract-repository.git ~/contractRepo
+            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone -q --depth 1 git@bitbucket.org:konradboniecki/contract-repository.git ~/contractRepo
             CONTRACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
             cd ~/contractRepo
             bash install-contracts.sh BUDGET_MGT_V=$CONTRACT_VERSION
@@ -77,8 +77,7 @@ jobs:
             echo $TAG > shared_workspace/tag.txt
 
       - store_test_results:
-          paths:
-            - target/surefire-reports
+          path: target/surefire-reports
       - store_artifacts:
           path: target/surefire-reports/surefire-report.html
       - store_artifacts:
@@ -96,7 +95,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "e7:ba:ee:08:1c:20:e5:43:d1:fe:81:1d:0b:a5:ad:d1"
+            - "64:08:5f:ce:8e:cf:4f:2f:c4:ad:fe:9f:18:6c:57:51"
       - attach_workspace:
           at: ~/repo
       - run:
@@ -105,7 +104,7 @@ jobs:
             cd /home/circleci/repo/shared_workspace
             export LC_BUDGET_MGT_TAG=$(cat tag.txt)
             echo "================ ATTEMPTING TO DEPLOY $LC_BUDGET_MGT_TAG ================"
-            ssh -t -o SendEnv=LC_BUDGET_MGT_TAG root@77.55.237.245 'BUDGET_MGT_TAG=$LC_BUDGET_MGT_TAG; unset LC_BUDGET_MGT_TAG; export BUDGET_MGT_TAG; echo "export BUDGET_MGT_TAG=$BUDGET_MGT_TAG" >> ~/.bashrc; docker tag "konradboniecki/budget:$BUDGET_MGT_TAG" "konradboniecki/budget:tmpTag"; docker rmi "konradboniecki/budget:$BUDGET_MGT_TAG"; docker-compose -f /root/BUDGET/docker-compose.yaml up -d --no-deps budget-mgt; docker rmi "konradboniecki/budget:tmpTag" || true'
+            ssh -t -o SendEnv=LC_BUDGET_MGT_TAG root@77.55.214.60 'BUDGET_MGT_TAG=$LC_BUDGET_MGT_TAG; unset LC_BUDGET_MGT_TAG; export BUDGET_MGT_TAG; echo "export BUDGET_MGT_TAG=$BUDGET_MGT_TAG" >> ~/.bashrc; docker tag "konradboniecki/budget:$BUDGET_MGT_TAG" "konradboniecki/budget:tmpTag"; docker rmi "konradboniecki/budget:$BUDGET_MGT_TAG"; docker-compose -f /root/budget-operations/deployment/docker-compose.yaml up -d --no-deps budget-mgt; docker rmi "konradboniecki/budget:tmpTag" || true'
           no_output_timeout: 3m
   deploy:
     machine:
@@ -113,7 +112,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "e7:ba:ee:08:1c:20:e5:43:d1:fe:81:1d:0b:a5:ad:d1"
+            - "64:08:5f:ce:8e:cf:4f:2f:c4:ad:fe:9f:18:6c:57:51"
       - attach_workspace:
           at: ~/repo
       - run:
@@ -122,5 +121,5 @@ jobs:
             cd /home/circleci/repo/shared_workspace
             export LC_BUDGET_MGT_TAG=$(cat tag.txt)
             echo "================ ATTEMPTING TO DEPLOY $LC_BUDGET_MGT_TAG ================"
-            ssh -t -o SendEnv=LC_BUDGET_MGT_TAG root@77.55.237.245 'BUDGET_MGT_TAG=$LC_BUDGET_MGT_TAG; unset LC_BUDGET_MGT_TAG; export BUDGET_MGT_TAG; echo "export BUDGET_MGT_TAG=$BUDGET_MGT_TAG" >> ~/.bashrc; docker-compose -f /root/BUDGET/docker-compose.yaml up -d --no-deps budget-mgt'
+            ssh -t -o SendEnv=LC_BUDGET_MGT_TAG root@77.55.214.60 'BUDGET_MGT_TAG=$LC_BUDGET_MGT_TAG; unset LC_BUDGET_MGT_TAG; export BUDGET_MGT_TAG; echo "export BUDGET_MGT_TAG=$BUDGET_MGT_TAG" >> ~/.bashrc; docker-compose -f /root/budget-operations/deployment/docker-compose.yaml up -d --no-deps budget-mgt'
           no_output_timeout: 3m
