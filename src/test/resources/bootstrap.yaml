@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  zipkin:
+    enabled: false
+  security:
+    user:
+      name: "testUserName"
+      password: "testUserPassword"

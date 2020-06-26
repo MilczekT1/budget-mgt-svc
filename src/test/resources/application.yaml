@@ -1,0 +1,9 @@
+budget:
+  chassis:
+    http-logging:
+      enabled: true
+spring:
+  jpa:
+    open-in-view: false
+  main:
+    lazy-initialization: true
